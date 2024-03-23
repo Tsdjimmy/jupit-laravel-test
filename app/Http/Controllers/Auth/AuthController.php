@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
 use App\Services\UserService;
+use App\Events\UserRegistered;
+use App\Services\RabbitMQService;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\RegisterUserRequest;
@@ -23,11 +25,14 @@ class AuthController extends Controller {
 
         }
         $token = $user->createToken('authToken')->plainTextToken;
-    
+        
+        $rabbitMQService = new RabbitMQService();
+        $rabbitMQService->publish([
+            'email' => $user->email,
+            'message' => 'Welcome to our application!',
+        ]);
         return response()->json(['status' => true, 'message' => 'Registration Successful', 'code' => 200, 'data' => ['user' => $user, 'access_token' => $token]], 200);
 
-        // TODO: Send welcome email and notify Node.js service)
-        // NotificationService::sendWelcomeEmail($user->email);
     }
 
     public function login(Request $request) {
