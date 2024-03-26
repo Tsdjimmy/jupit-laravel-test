@@ -44,5 +44,11 @@ class UserService
         ];
     }
 
+    public function resetPassword($user, $password) {
+        $user->password = Hash::make($password);
+        $user->save();
+    }
+    
+
 
 }

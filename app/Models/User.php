@@ -2,47 +2,34 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Services\RabbitMQService; // Make sure to import your RabbitMQService
 
 class User extends Authenticatable
 {
-    use HasFactory, HasApiTokens, Notifiable;
+    use HasApiTokens, Notifiable, HasFactory;
+
+    protected $fillable = ['name', 'email', 'password'];
+    protected $hidden = ['password', 'remember_token'];
+    protected $casts = ['email_verified_at' => 'datetime'];
 
     /**
-     * The attributes that are mass assignable.
+     * Send the password reset notification.
      *
-     * @var array<int, string>
+     * @param  string  $token
+     * @return void
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    public function sendPasswordResetNotification($token)
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        $rabbitMQService = new RabbitMQService();
+        $rabbitMQService->publish([
+            'email' => $this->email,
+            'token' => $token,
+            'type' => 'password_reset',
+            'url' => url(config('app.url').route('password.reset', ['token' => $token], false)),
+        ]);
     }
 }
