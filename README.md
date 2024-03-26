@@ -1,67 +1,102 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Jupit Technical Test
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This technical test assesses your proficiency in microservices architecture, focusing on API design and implementation with PHP/Laravel for authentication services and Node.js/JavaScript for notification services.
 
-## About Laravel
+## Question
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Your task is to develop an authentication API flow (registration/login) within a Laravel microservice, which will handle authentication logic. Additionally, all mail and notification processes triggered by these authentication actions should be handled by a separate Node.js microservice. The seamless integration between these two services via REST API is crucial.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🔗 Links
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- [Node.js Notification Microservice Repository](https://github.com/Tsdjimmy/jupit-nodejs-test)
 
-## Learning Laravel
+## Assumptions
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+The case study assumes:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+1. Both microservices communicate via REST API.
+2. The system is deployed on separate Linux machines.
+3. The development approach is test-driven.
+4. All implementations are functional.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## How to Submit
 
-## Laravel Sponsors
+1. Clone the respective repository.
+2. Create a new branch named after your email address.
+3. Complete your work on this new branch.
+4. Push your code along with the Postman API documentation.
+5. Repeat the steps for both the Laravel and Node.js microservices.
+6. Ensure all submissions are made before the deadline.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Setup Instructions for Laravel Authentication Service
 
-### Premium Partners
+### Prerequisites
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+- PHP (>= 7.3)
+- Composer
+- Laravel-supported database (MySQL, PostgreSQL, SQLite, SQL Server)
+- RabbitMQ Server
 
-## Contributing
+### Installation & Configuration
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1. **Clone the Repository**
 
-## Code of Conduct
+   ```bash
+   git clone https://github.com/Tsdjimmy/jupit-laravel-test.git
+   cd jupit-laravel-test
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+2. **Install Composer Dependencies**
 
-## Security Vulnerabilities
+   This includes the necessary package for RabbitMQ integration.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+   ```bash
+   composer install
+   ```
 
-## License
+   Ensure `php-amqplib/php-amqplib` is included in your `composer.json` file for RabbitMQ communication.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# jupit-laravel-test
+3. **Environment Setup**
+
+   Copy the `.env.example` file to a new `.env` file. Adjust database settings and other environment variables as necessary.
+
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+4. **Database Migrations**
+
+   Run migrations to set up your database schema.
+
+   ```bash
+   php artisan migrate
+   ```
+
+5. **Laravel Sanctum for API Authentication**
+
+   Install Laravel Sanctum for SPA authentication:
+
+   ```bash
+   composer require laravel/sanctum
+   php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+   php artisan migrate
+   ```
+
+   Ensure your `api` middleware group is using Sanctum's `EnsureFrontendRequestsAreStateful` middleware for API token authentication.
+
+6. **RabbitMQ Messaging**
+
+   Ensure your `.env` file contains the correct RabbitMQ service credentials and the necessary configuration for Laravel to publish messages to the queue.
+
+7. **Start the Laravel Development Server**
+
+   ```bash
+   php artisan serve
+   ```
+
+   Your Laravel application should now be accessible.
+
+### Testing
+
+Refer to the provided [Postman documentation](https://documenter.getpostman.com/view/10059500/2sA35D5iCQ) for details on how to test the API endpoints. Ensure your Node.js notification service is running and configured to receive messages from Laravel through RabbitMQ.
